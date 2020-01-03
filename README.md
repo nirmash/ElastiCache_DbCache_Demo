@@ -11,7 +11,7 @@ The application queries the MySQL database for a 1000 times, each query will use
 # How to use it
 Once installed, browse to the root application web address and click the **Query DB** button. The application will then run 1,000 queries against the cache / database and display the number of cache hits and misses on 
 
-[default screen]: images/dbcache_screen.jpg
+[default screen]:(images/dbcache_screen.jpg)
 
 
 # Install

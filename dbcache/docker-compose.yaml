@@ -1,0 +1,56 @@
+version: "3.7"
+services:
+
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile-redis
+    networks:
+      envoymesh:
+        aliases:
+          - redis_server
+    expose:
+      - "63791"
+    ports:
+      - "63791:6379"
+  
+  replica:
+    build:
+      context: .
+      dockerfile: Dockerfile-redis
+    networks:
+      envoymesh:
+        aliases:
+          - redis_replica
+    expose:
+      - "6379"
+    ports:
+      - "63790:6379"
+
+  service:
+    build:
+      context: .
+      dockerfile: Dockerfile-service
+    networks:
+      envoymesh:
+        aliases:
+          - service
+    environment:
+      - DB=${DB}
+      - HOST=${HOST}
+      - PASS=${PASS}
+      - USER=${USER}
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - REDIS_READER_HOST=${REDIS_READER_HOST}
+      - REDIS_MASTER_PORT=${REDIS_MASTER_PORT}
+      - REDIS_READER_PORT=${REDIS_READER_PORT}
+      - SQL_QUERY_TEXT=${SQL_QUERY_TEXT}
+      - PYTHONPATH=${PYTHONPATH}
+      - FLASK_ENV=${FLASK_ENV}
+    expose: 
+      - 80
+    ports:
+      - 80:80
+
+networks:
+  envoymesh: {}

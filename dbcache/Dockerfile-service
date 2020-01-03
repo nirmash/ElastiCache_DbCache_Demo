@@ -1,0 +1,15 @@
+FROM envoyproxy/envoy-alpine-dev:latest
+
+RUN apk update && apk add python3 bash curl redis
+RUN pip3 install -q Flask==0.11.1 requests==2.18.4 redis pymysql datetime
+RUN mkdir /code
+RUN mkdir /code/dbcache/
+RUN mkdir /code/dbcache/templates
+
+ADD ./run-server.sh /code
+ADD ./setup.py /code
+ADD /dbcache/__init__.py /code/dbcache
+ADD /dbcache/service.py /code/dbcache
+ADD /dbcache/templates/index.html code/dbcache/templates
+RUN chmod u+x /code/run-server.sh
+ENTRYPOINT /code/run-server.sh

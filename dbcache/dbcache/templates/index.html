@@ -1,0 +1,156 @@
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm" style="text-align: left;">
+            <div id="graph" style="width:500px;height:600px;"></div>
+        </div>
+        <div class="col-sm" style="text-align: left;">
+            <p><button id="db_run" onclick="launch_db_run()">Query DB</button></p>
+            <p id="db_summary"></p>
+            <header>Database cache Logs</header>
+            <div id="db_cache_log" style="width:1000px;height:800px">
+                <table id="log_tbl">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+<script>
+
+window.onload = function() {
+    window.redis_times = 0;
+    window.mysql_times = 0;
+};
+//ssh -i "./Users/nmmashko/.ssh/nmmashko-ec2.pem" ec2-user@ec2-54-149-253-243.us-west-2.compute.amazonaws.com
+
+/*
+
+ec2 vpc: vpc-fe914d86
+elasticache: sg-0dd72a7b
+
+
+*/
+
+function get_BaseURL(){
+    return window.location.origin + '/';
+}
+
+function launch_db_run(){
+    const request = new XMLHttpRequest();
+    const base_url=get_BaseURL()+'start_db_run';
+    request.open("GET", base_url);
+    request.send();
+}
+
+function make_table (data, titles, fields){
+    response = "<tr>";
+    for(ii=0; ii<titles.length; ii++){
+        response += "<th>" + titles[ii] + "</th>";
+    }
+    response += "</tr>";
+    for(ii=0; ii<data.length; ii++){
+        var line = JSON.parse(data[ii]);
+        response += "<tr>";
+        for(jj=0; jj<fields.length; jj++){
+            response += "<td>" + line[fields[jj]] + "</td>";
+        }
+        response += "</tr>";
+    }
+    return response;
+}
+
+function load_time_values(){
+    const request = new XMLHttpRequest();
+    const base_url=get_BaseURL()+'get/latest_time';
+    request.open("GET", base_url);
+    request.send();
+    request.onreadystatechange = function() {
+        let data = request.response;
+        if (data != ''){
+            rTime = data.split("|")[0];
+            mTime = data.split("|")[1];
+            window.redis_times = rTime.substring(1,rTime.length-1);
+            window.mysql_times = mTime.substring(0,mTime.length-2);
+        }
+    }    
+}
+
+function get_table_data(div,urlPath,titles,fields){
+    const request = new XMLHttpRequest();
+    const base_url=get_BaseURL()+'get/'+urlPath;
+    request.open("GET", base_url);
+    request.send();
+    request.onreadystatechange = function() {
+        let data = request.response;
+        if (data != ''){
+            var obj = JSON.parse(data);
+            outDiv = document.getElementById(div);
+            outDiv.innerHTML = make_table(obj,titles, fields);
+        }
+    }    
+}
+7
+function update_hit_miss() {
+    const request = new XMLHttpRequest();
+    request.open("GET", get_BaseURL() + 'get/db_cache');
+    request.send();
+    request.onreadystatechange = function() {
+        drawPlot(request.responseText);
+    }
+}
+
+function drawPlot(graph_data)
+{
+        try{
+            y1 = graph_data.split("|")[0];
+            y2 = graph_data.split("|")[1];
+        }catch(error){
+            return;
+        }
+
+        var trace1 = {
+        x:['Hits'],
+        y: [y1],
+        text: window.redis_times + " ms",
+        textposition: 'auto',
+        hoverinfo: 'none',        
+        type: 'bar',
+        name: 'bb'
+        };
+        var trace2 = {
+        x:['Misses'],
+        y: [y2],
+        text: window.mysql_times + " ms",
+        textposition: 'auto',
+        hoverinfo: 'none',        
+        type: 'bar',
+        name: 'xx'
+        };        
+
+    var data = [trace1, trace2];
+
+    var layout = {
+        title: 'Database cache hits and misses',
+        showlegend: false
+    };
+    
+    Plotly.newPlot('graph', data, layout, {displayModeBar: false});
+}
+
+function update_ux() {
+    load_time_values();
+    get_table_data("log_tbl","log/DBCACHE",['SQL','Time (ms)','Count','Hit / Miss'],['sql_txt','time','cnt','hm']);
+    update_hit_miss();
+}
+
+window.setInterval(update_ux, 100)
+</script>
+

@@ -1,41 +1,24 @@
-# Build the initial cluster with the envoy
-https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/redis#running-the-sandboxes
-$ pwd
-envoy/examples/redis
-$ docker-compose pull
-$ docker-compose up --build -d
-$ docker-compose ps
-# Login to the envoy docker machine 
-docker exec -it redis_service_1  /bin/bash
-# Create a replica for the 1st master 
-docker exec -it redis_service_1 redis-cli -h redis_replica_1 -p 6379 replicaof redis_redis_1 6379
-docker exec -it redis_service_1 redis-cli -h redis_replica_1 -p 6379 config set slave-read-only no
-docker exec -it redis_service_1 /bin/bash
+# Overview
+This repo contains a demo for using Redis (in a Docker container or on ElastiCache) as a caching layer for a MySQL database. The demo does not require AWS and can be run locally as well as in the cloud. 
 
-# Test 
-redis-cli -h localhost -p 1999 set foo bar
-docker network inspect redis_envoymesh
-docker exec -it dbcache_service_1 /bin/bash
+# How it works
+The demo is a single page web application ([SPA](https://en.wikipedia.org/wiki/Single-page_application)) that performs semi-random queries on a MySQL database and caches results in Redis. It then collects stats on performance of cache vs. the database. 
 
-curl http://localhost/service/set/new_route
+The demo is implemented in [Python Flask](https://www.fullstackpython.com/flask.html) (backend) and Javascript on a client HTML page. The demo runs in a Docker container to make dependencies easier to manage.
 
-curl http://localhost/service/set/run_route/
+The application queries the MySQL database for a 1000 times, each query will use a random number of records to fetch back. Query results will be returned from Redis if in cache or returned from the DB if not.
 
-# Delete the DB
-docker exec -it redis_redis_1 /bin/bash
-FLUSHDB
+# How to use it
+Once installed, browse to the root application web address and click the **Query DB** button. The application will then run 1,000 queries against the cache / database and display the number of cache hits and misses on 
 
-docker exec -it redis_replica_1 /bin/bash
-FLUSHDB
+[default screen]: images/dbcache_screen.jpg
 
-# Data Structures
-Number of trips
-Max time
-Avg time 
-Min time 
-Longest 
-Shortest
-Trip summary
+
+# Install
+
+# Run
+
+# Troubleshoot
 
  
  	

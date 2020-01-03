@@ -9,9 +9,9 @@ The demo is implemented in [Python Flask](https://www.fullstackpython.com/flask.
 The application queries the MySQL database for a 1000 times, each query will use a random number of records to fetch back. Query results will be returned from Redis if in cache or returned from the DB if not.
 
 # How to use it
-Once installed, browse to the root application web address and click the **Query DB** button. The application will then run 1,000 queries against the cache / database and display the number of cache hits and misses on 
+Once installed, browse to the root application web address and click the **Query DB** button. The application will then run 1,000 queries against the cache / database and display the number of cache hits and misses on Redis. The last call duration is displayed inside the bar graph.
 
-[default screen]:(images/dbcache_screen.jpg)
+![Screenshot](https://github.com/nirmash/ElastiCache_DbCache_Demo/blob/master/images/dbcache_screen.jpg?raw=true)
 
 
 # Install

@@ -36,7 +36,7 @@ services:
         aliases:
           - service
     environment:
-      - DB=reviews
+      - DB=${DB}
       - HOST=${HOST}
       - PASS=${PASS}
       - USER=${USER}
@@ -44,9 +44,9 @@ services:
       - REDIS_READER_HOST=${REDIS_READER_HOST}
       - REDIS_MASTER_PORT=${REDIS_MASTER_PORT}
       - REDIS_READER_PORT=${REDIS_READER_PORT}
-      - SQL_QUERY_TEXT='SELECT customer_id, review_id FROM reviews limit {}'
-      - FLASK_ENV=development
-      - PYTHONPATH=/code
+      - SQL_QUERY_TEXT=${SQL_QUERY_TEXT}
+      - FLASK_ENV=${FLASK_ENV}
+      - PYTHONPATH=${PYTHONPATH}
     expose: 
       - 80
     ports:

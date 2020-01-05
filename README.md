@@ -29,15 +29,16 @@ The application dependencies are valid for both local environments or on EC2:
 * [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 **Note:** `yum` is the package manager used on EC2 Amazon Linux instances.
-## Setup the MySQL database 
-
 ## Application files
 Clone the demo repository:
 ```
 $ git clone https://github.com/nirmash/ElastiCache_DbCache_Demo.git
 ```
-Set the environment variables required to run the demo. 
+## Environment variables
+Set the environment variables required to run the demo.
 
+**Note:** The demo uses environment variables to store application secrets.
+### AWS
 ```
 export REDIS_MASTER_HOST=your_redis_master_node_endpoint
 export REDIS_READER_HOST=your_redis_replica_node_endpoint      
@@ -46,11 +47,28 @@ export REDIS_READER_PORT=your_redis_replica_port (typically 6379)
 export HOST=your_mysql_endpoint
 export PASS=your_mysql_password
 export USER=your_mysql_username
+export DB=reviews
+export SQL_QUERY_TEXT='SELECT customer_id, review_id FROM reviews limit {}'
+export FLASK_ENV=development
+export PYTHONPATH=/code
 ```
-**Note:** The demo uses environment variables to store application secrets.
+### Locally 
+```
+export REDIS_MASTER_HOST=dbcache_redis_1
+export REDIS_READER_HOST=dbcache_replica_1      
+export REDIS_MASTER_PORT=6379
+export REDIS_READER_PORT=6379    
+export DB=reviews
+export HOST=172.28.1.1
+export PASS=mypassword
+export USER=root
+export SQL_QUERY_TEXT='SELECT customer_id, review_id FROM reviews limit {}'
+export FLASK_ENV=development
+export PYTHONPATH=/code
+export DB=reviews
+```
 
-
-# Run
+# Build
 Browse to the `docker-compose.yaml` file location and load the application Docker container:
 ```
 $ cd ElastiCache_DbCache_Demo/dbcache
@@ -67,7 +85,15 @@ dbcache_service_1   /bin/sh -c /code/run-server.sh   Up      10000/tcp, 0.0.0.0:
 ```
 Note that the application will load 3 containers, the dbcache_service_1 contains the application code while the 2 Redis containers can be used instead of ElastiCache to run the demo locally.
 
-# Troubleshoot
+## Setup the MySQL database 
+### On AWS 
+Create a [new RDS MySQL instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.MySQL.html), if you already have one, open the `reviews.sql` file included in the `ElastiCache_DbCache_Demo` git repository. The file includes SQL scripts to create the database, a table, and populate it with the demo data.
+### Locally 
+The Docker network in the demo includes MySQL and MySQL admin containers. Create and populate the database by browsing to http://localhost:8080. Login into the admin tool with the user name `root` and password `mypassword`. 
+Create a new database called `reviews` and use the sql in the `reviews.sql` file included in the `ElastiCache_DbCache_Demo` git repository to create the table and populate it with the demo data.
+# Run the demo
+**Locally:** Browse to http://localhost.
 
+**On AWS:** Browse to the endpoint of the EC2 server you created earlier.
  
  	

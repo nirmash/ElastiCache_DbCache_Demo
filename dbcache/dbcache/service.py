@@ -105,11 +105,13 @@ def end_timer():
 def connect_databases():
 
     global mySQL_con, redis_reader_con, redis_writer_con
+
     mySQL_con = pymysql.connect(
-        os.getenv('HOST'),
-        os.getenv('USER'),
-        os.getenv('PASS'),
-        os.getenv('DB'))
+    os.getenv('HOST'),
+    os.getenv('USER'),
+    os.getenv('PASS'),
+    os.getenv('DB'))
+    start_timer()
 
     redis_reader_con = get_redis_reader_client()
     redis_writer_con =  get_redis_client()
@@ -142,7 +144,6 @@ def fetch(sql):
         return value
     else:
         # Get data from SQL
-        start_timer()
         cursor=mySQL_con.cursor()
         cursor.execute(SQLCmd)
         value = cursor.fetchall()[0][0]

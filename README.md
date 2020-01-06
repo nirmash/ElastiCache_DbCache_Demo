@@ -79,11 +79,13 @@ After the build process is done, the Docker containers status will appear (see b
 ```
       Name                     Command               State                 Ports               
 -----------------------------------------------------------------------------------------------
+dbcache_adminer_1   entrypoint.sh docker-php-e ...   Up      0.0.0.0:8080->8080/tcp            
+dbcache_db_1        docker-entrypoint.sh --def ...   Up      0.0.0.0:3306->3306/tcp, 33060/tcp 
 dbcache_redis_1     docker-entrypoint.sh redis ...   Up      0.0.0.0:63791->6379/tcp, 63791/tcp
 dbcache_replica_1   docker-entrypoint.sh redis ...   Up      0.0.0.0:63790->6379/tcp           
-dbcache_service_1   /bin/sh -c /code/run-server.sh   Up      10000/tcp, 0.0.0.0:80->80/tcp    
+dbcache_service_1   /bin/sh -c /code/run-server.sh   Up      10000/tcp, 0.0.0.0:80->80/tcp   
 ```
-Note that the application will load 3 containers, the dbcache_service_1 contains the application code while the 2 Redis containers can be used instead of ElastiCache to run the demo locally.
+Note that the application will load 5 containers, the dbcache_service_1 contains the application code, the dbcache_db_1 contains a MySQL server, the dbcache_adminer_1 contains the MySQL admin tool and can be replaced with an RDS database  while the 2 Redis containers can be used instead of ElastiCache to run the demo locally.
 
 ## Setup the MySQL database 
 ### On AWS 

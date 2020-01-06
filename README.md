@@ -3,7 +3,7 @@ This repo contains a demo for using Redis (in a Docker container or on ElastiCac
 
 This demo showcases the performance improvements that can be achieved when using Amazon ElastiCache for Redis to accelerate relational (MySQL) database queries.
 
-**Warning: The application and instructions were developed and tested on a Mac client and an EC2 Amazon Linux server.**
+**Warning:** The application and instructions were developed and tested on a Mac client and an EC2 Amazon Linux server.
 
 # How it works
 The demo is a single page web application ([SPA](https://en.wikipedia.org/wiki/Single-page_application)) that performs semi-random queries on a MySQL database and caches results in Redis. It then collects stats on performance of cache vs. the database. 
